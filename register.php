@@ -67,7 +67,7 @@ try {
             )
         );
         echo "<script>
-                alert('這是');
+                alert('註冊成功');
                 location.href='index.php';
              </script>";
         exit();
