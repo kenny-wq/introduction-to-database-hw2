@@ -2,6 +2,7 @@
 session_start();
 # remove all session variables
 session_unset(); 
+#hello
 # destroy the session 
 session_destroy();
 $_SESSION['Authenticated']=false;
