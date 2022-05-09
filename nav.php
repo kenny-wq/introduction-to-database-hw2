@@ -1,3 +1,63 @@
+<?php
+session_start();
+if(!isset($_SESSION['register_success'])){
+  $_SESSION['register_success'] = false;
+}
+
+function print_row($id,$picture_type,$picture,$meal_name,$price,$quantity){
+  // echo <img src="data:$row['imgType'];base64, $logodata " />;
+  echo<<<EOT
+  <tr>
+    <th scope="row">{$id}</th>
+    <td><img src="data:{$picture_type};base64,{$picture}" width="50%" height="50%" alt="Hamburger"></td>
+    
+    <td>{$meal_name}</td>
+
+    <td>{$price} </td>
+    <td>{$quantity} </td>
+    <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#Hamburger-1">
+    Edit
+    </button></td>
+    <!-- Modal -->
+        <div class="modal fade" id="Hamburger-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{$meal_name} Edit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <!--change_meal form-->
+              <form action="change_meal.php" method="post">
+                <div class="modal-body">
+                  <div class="row" >
+                    <div class="col-xs-6">
+                      <label for="ex71">price</label>
+                      <input name="new_price" class="form-control" id="ex71" type="text">
+                    </div>
+                    <div class="col-xs-6">
+                      <label for="ex41">quantity</label>
+                      <input name="new_quantity" class="form-control" id="ex41" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <input type="submit" name="id{$id}" value="abc" class="btn btn-secondary">
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+    <form action="delete_meal.php" method="post">
+      <td><input type="submit" name="delete_id{$id}" value="Delete" class="btn btn-danger"><td>
+    </form>
+  </tr>
+EOT;
+}
+?>
 <!doctype html>
 <html lang="en">
 
@@ -19,11 +79,17 @@
 <body>
  
   <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
+    <!-- <div class="container-fluid"> -->
       <div class="navbar-header">
         <a class="navbar-brand " href="#">WebSiteName</a>
       </div>
-
+    <!-- </div> -->
+    <div class="pull-right">
+        <ul class="nav navbar-nav">
+          <form action="logout.php">
+            <li><input type="submit" value="Log Out" class="btn navbar-btn"></li>
+          </form>
+        </ul>     
     </div>
   </nav>
   <div class="container">
@@ -161,7 +227,6 @@
                 <!-- Modal -->
   <div class="modal fade" id="macdonald"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
-    
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
@@ -224,81 +289,115 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
         </div>
       </div>
-      
     </div>
   </div>
           </div>
-
         </div>
       </div>
       <div id="menu1" class="tab-pane fade">
 
         <h3> Start a business </h3>
-        <div class="form-group ">
+        <!-- shop register -->
+        <form class="form-group" action="register_shop.php" method="post">
           <div class="row">
             <div class="col-xs-2">
               <label for="ex5">shop name</label>
-              <input class="form-control" id="ex5" placeholder="macdonald" type="text" >
+              <?php
+                if($_SESSION['register_success']==true){
+                  echo '<input name="shop_name" class="form-control" id="ex5" value="'.$_SESSION['shop_name'].'" type="text" readonly>';
+                }
+                else{
+                  echo '<input name="shop_name" class="form-control" id="ex5" placeholder="macdonald" type="text">';
+                }
+              ?>
             </div>
             <div class="col-xs-2">
               <label for="ex5">shop category</label>
-              <input class="form-control" id="ex5" placeholder="fast food" type="text" >
+              <?php
+                if($_SESSION['register_success']==true){
+                  echo '<input name="shop_category" class="form-control" id="ex5" value="'.$_SESSION['shop_category'].'" type="text" readonly >';
+                }
+                else{
+                  echo '<input name="shop_category" class="form-control" id="ex5" placeholder="fast food" type="text" >';
+                }
+              ?>
+              
             </div>
             <div class="col-xs-2">
               <label for="ex6">latitude</label>
-              <input class="form-control" id="ex6" placeholder="121.00028167648875" type="text" >
+              <?php
+                if($_SESSION['register_success']==true){
+                  echo '<input name="shop_latitude" class="form-control" id="ex6" value="'.$_SESSION['shop_latitude'].'" type="text" readonly>';
+                }
+                else{
+                  echo '<input name="shop_latitude" class="form-control" id="ex6" placeholder="121.00028167648875" type="text" >';
+                }
+              ?>
+              
             </div>
             <div class="col-xs-2">
               <label for="ex8">longitude</label>
-              <input class="form-control" id="ex8" placeholder="24.78472733371133" type="text" >
+              <?php
+                if($_SESSION['register_success']==true){
+                  echo '<input name="shop_longitude" class="form-control" id="ex8" value="'.$_SESSION['shop_longitude'].'" type="text" readonly>';
+                }
+                else{
+                  echo '<input name="shop_longitude" class="form-control" id="ex8" placeholder="24.78472733371133" type="text" >';
+                }
+              ?>
+              
             </div>
           </div>
-        </div>
-
-
-
-        <div class=" row" style=" margin-top: 25px;">
-          <div class=" col-xs-3">
-            <button type="button" class="btn btn-primary"  >register</button>
+          <div class=" row" style=" margin-top: 25px;">
+            <div class=" col-xs-3">
+              <?php
+                if($_SESSION['register_success']==true){
+                  echo '<input type="submit" value="register" class="btn btn-primary" disabled>';
+                }
+                else{
+                  echo '<input type="submit" value="register" class="btn btn-primary">';
+                }
+              ?>
+              
+            </div>
           </div>
-        </div>
+        </form>
+
         <hr>
         <h3>ADD</h3>
-
-        <div class="form-group ">
+        <!-- upload meal -->
+        <form action="upload_meal.php" method="post" class="form-group" enctype="multipart/form-data">
           <div class="row">
-
             <div class="col-xs-6">
               <label for="ex3">meal name</label>
-              <input class="form-control" id="ex3" type="text">
+              <input name="name" class="form-control" id="ex3" type="text">
             </div>
           </div>
           <div class="row" style=" margin-top: 15px;">
             <div class="col-xs-3">
               <label for="ex7">price</label>
-              <input class="form-control" id="ex7" type="text">
+              <input name="price" class="form-control" id="ex7" type="text">
             </div>
             <div class="col-xs-3">
               <label for="ex4">quantity</label>
-              <input class="form-control" id="ex4" type="text">
+              <input name="quantity" class="form-control" id="ex4" type="text">
             </div>
           </div>
-
 
           <div class="row" style=" margin-top: 25px;">
 
             <div class=" col-xs-3">
               <label for="ex12">上傳圖片</label>
               <input id="myFile" type="file" name="myFile" multiple class="file-loading">
-
             </div>
+
             <div class=" col-xs-3">
-
-              <button style=" margin-top: 15px;" type="button" class="btn btn-primary">Add</button>
+              <input style=" margin-top: 15px;" type="submit" class="btn btn-primary" value="Add">
             </div>
-          </div>
-        </div>
 
+          </div>
+        </form>
+        <!-- meal list -->
         <div class="row">
           <div class="  col-xs-8">
             <table class="table" style=" margin-top: 15px;">
@@ -315,49 +414,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td><img src="Picture/1.jpg" with="50" heigh="10" alt="Hamburger"></td>
-                  <td>Hamburger</td>
                 
-                  <td>80 </td>
-                  <td>20 </td>
-                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#Hamburger-1">
-                  Edit
-                  </button></td>
-                  <!-- Modal -->
-                      <div class="modal fade" id="Hamburger-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="staticBackdropLabel">Hamburger Edit</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <div class="row" >
-                                <div class="col-xs-6">
-                                  <label for="ex71">price</label>
-                                  <input class="form-control" id="ex71" type="text">
-                                </div>
-                                <div class="col-xs-6">
-                                  <label for="ex41">quantity</label>
-                                  <input class="form-control" id="ex41" type="text">
-                                </div>
-                              </div>
-                    
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-                             
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  <td><button type="button" class="btn btn-danger">Delete</button></td>
-                </tr>
-                <tr>
+                <!-- <tr>
                   <th scope="row">2</th>
                   <td><img src="Picture/2.jpg" with="10" heigh="10" alt="coffee"></td>
                   <td>coffee</td>
@@ -366,9 +424,9 @@
                   <td>20</td>
                   <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#coffee-1">
                     Edit
-                    </button></td>
+                    </button></td> -->
                     <!-- Modal -->
-                        <div class="modal fade" id="coffee-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <!-- <div class="modal fade" id="coffee-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
@@ -400,19 +458,41 @@
 
 
                   <td><button type="button" class="btn btn-danger">Delete</button></td>
-                </tr>
+                </tr> -->
+                <?php
+                  $dbservername = 'localhost';
+                  $dbname = 'database_hw2';
+                  $dbusername = 'root';
+                  $dbpassword = '';
 
+                  //連結MySQL Server
+                  $conn = new PDO(
+                    "mysql:host=$dbservername;dbname=$dbname",
+                    $dbusername,
+                    $dbpassword
+                  );
+                  # set the PDO error mode to exception
+                  $conn->setAttribute(
+                    PDO::ATTR_ERRMODE,
+                    PDO::ERRMODE_EXCEPTION
+                  );
+                  $stmt = $conn->prepare("select * from food");
+                  $stmt->execute();
+                  while($row=$stmt->fetch()){
+                    $id = $row['id'];
+                    $picture_type = $row['picture_file_type'];
+                    $picture = $row['picture'];
+                    $meal_name = $row['name'];
+                    $price = $row['price'];
+                    $quantity = $row['quantity'];
+                    print_row($id,$picture_type,$picture,$meal_name,$price,$quantity);
+                  }
+                ?>
               </tbody>
             </table>
           </div>
-
         </div>
-
-
       </div>
-
-
-
     </div>
   </div>
 
