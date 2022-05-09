@@ -48,17 +48,15 @@ try{
     else{
         $stmt = $conn->prepare(
             "insert into shops(
-                name, category, latitude, longitude
+                name, category, location
             )values(
-                :name,:category,:latitude,:longitude
+                :name,:category,ST_GeomFromText('POINT(".$_POST['shop_longitude']." ".$_POST['shop_latitude'].")')
             )"
         );
         $stmt->execute(
             array(
                 'name' => $_POST['shop_name'],
                 'category' => $_POST['shop_category'],
-                'latitude' => $_POST['shop_latitude'],
-                'longitude' => $_POST['shop_longitude']
             )
         );
         $_SESSION['register_success'] = true;

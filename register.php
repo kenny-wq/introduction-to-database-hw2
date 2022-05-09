@@ -51,9 +51,9 @@ try {
     else {
         $stmt = $conn->prepare(
             "insert into users(
-                account, password, username, phone_number, longitude, latitude
+                account, password, username, phone_number, location
             ) values(
-                :account,:password,:username,:phone_number,:longitude,:latitude
+                :account,:password,:username,:phone_number,ST_GeomFromText('POINT(".$_POST['longitude']." ".$_POST['latitude'].")')
             )"
         );
         $stmt->execute(
@@ -62,8 +62,6 @@ try {
                 'password' => hash('sha256', $_POST['password']),
                 'username' => $_POST['username'],
                 'phone_number' => $_POST['phone_number'],
-                'longitude' => $_POST['longitude'],
-                'latitude' => $_POST['latitude']
             )
         );
         echo "<script>
