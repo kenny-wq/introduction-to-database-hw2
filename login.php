@@ -32,7 +32,7 @@ try {
         if ($row['password'] == hash('sha256', $_POST['password'])) {
             $_SESSION['Authenticated'] = true;
             $_SESSION['account'] = $row[0];
-            header("Location: nav.html");
+            header("Location: nav.php");
             exit();
         } else
             throw new Exception('Login failed.');

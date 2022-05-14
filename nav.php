@@ -44,7 +44,7 @@ function print_row($id,$picture_type,$picture,$meal_name,$price,$quantity){
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <input type="submit" name="id{$id}" value="abc" class="btn btn-secondary">
+                  <input type="submit" name="id{$id}" value="edit" class="btn btn-secondary">
                 </div>
               </form>
 
@@ -105,8 +105,37 @@ EOT;
       <div id="home" class="tab-pane fade in active">
         <h3>Profile</h3>
         <div class="row">
-          <div class="col-xs-10">
-            Accouont: sherry, user, PhoneNumber: 0912345678, walletbalance: 100
+          <div class="col-xs-12">
+          Accouont: sherry, user, PhoneNumber: 0912345678,  location: 24.786944626633865, 120.99753981198887
+            
+            <!--助教新增-->
+            <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
+            data-target="#location">edit location</button>
+            <!--  -->
+            <div class="modal fade" id="location"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog  modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">edit location</h4>
+                  </div>
+                  <div class="modal-body">
+                    <label class="control-label " for="latitude">latitude</label>
+                    <input type="text" class="form-control" id="latitude" placeholder="enter latitude">
+                      <br>
+                      <label class="control-label " for="longitude">longitude</label>
+                    <input type="text" class="form-control" id="longitude" placeholder="enter longitude">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+            <!--助教新增-->
+            walletbalance: 100
             <!-- Modal -->
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
               data-target="#myModal">Add value</button>
@@ -504,6 +533,24 @@ EOT;
         $(this).tab('show');
       });
     });
+    <?php
+      if(isset($_SESSION['jump'])&&$_SESSION['jump']==true){
+        echo<<<EOT
+          $(".nav-tabs a").tab('show');
+        EOT;
+        $_SESSION['jump'] = false;
+      }
+      else {
+        echo<<<EOT
+        $(document).ready(function () {
+          $(".nav-tabs a").click(function () {
+            $(this).tab('show');
+          });
+        });
+        EOT;
+      }
+    ?>
+
   </script>
 
   <!-- Option 2: Separate Popper and Bootstrap JS -->

@@ -37,5 +37,6 @@ $stmt = $conn->prepare(
 $stmt->execute(array(
     'id'=>$meal_id
 ));
+$_SESSION['jump'] = true;
 header("Location: nav.php");
 ?>
