@@ -3,12 +3,25 @@ session_start();
 if(!isset($_SESSION['register_success'])){
   $_SESSION['register_success'] = false;
 }
+// tsu part
+$mysqli = new mysqli("localhost","root","","database_hw2");
+$pwd = $_SESSION['Password'] ; 
+$stmt = $mysqli->prepare(" SELECT account , username , phone_number , ST_X(location) , ST_Y(location), password FROM users WHERE password = ? ") ;
+$stmt->bind_param("s" , $pwd) ; 
+$stmt->execute() ; 
+$result = $stmt->get_result(); 
+$info = $result->fetch_assoc() ;
+$_SESSION['x'] = $info['ST_X(location)'] ; 
+$_SESSION['y'] = $info['ST_Y(location)'] ; 
+$stmt -> close();
+$mysqli -> close();
+// tsu part
 
-function print_row($id,$picture_type,$picture,$meal_name,$price,$quantity){
+function print_row($order,$id,$picture_type,$picture,$meal_name,$price,$quantity){
   // echo <img src="data:$row['imgType'];base64, $logodata " />;
   echo<<<EOT
   <tr>
-    <th scope="row">{$id}</th>
+    <th scope="row">{$order}</th>
     <td><img src="data:{$picture_type};base64,{$picture}" width="50%" height="50%" alt="Hamburger"></td>
     
     <td>{$meal_name}</td>
@@ -106,8 +119,16 @@ EOT;
         <h3>Profile</h3>
         <div class="row">
           <div class="col-xs-12">
-          Accouont: sherry, user, PhoneNumber: 0912345678,  location: 24.786944626633865, 120.99753981198887
-            
+          <!-- Accouont: sherry, user, PhoneNumber: 0912345678,  location: 24.786944626633865, 120.99753981198887 -->
+          <?php
+              echo "Account : " . $info['account'] ;
+              echo "<br>" ;
+              echo "Username : " . $info['username'] ; 
+              echo "<br>" ;
+              echo "Phonenumber : " . $info['phone_number'] ;
+              echo "<br>" ;
+              echo "longitude : " . strval($info['ST_X(location)']) . " ; latitude : " . strval($info['ST_Y(location)']); 
+          ?>
             <!--助教新增-->
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
             data-target="#location">edit location</button>
@@ -115,20 +136,22 @@ EOT;
             <div class="modal fade" id="location"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
               <div class="modal-dialog  modal-sm">
                 <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">edit location</h4>
-                  </div>
-                  <div class="modal-body">
-                    <label class="control-label " for="latitude">latitude</label>
-                    <input type="text" class="form-control" id="latitude" placeholder="enter latitude">
-                      <br>
-                      <label class="control-label " for="longitude">longitude</label>
-                    <input type="text" class="form-control" id="longitude" placeholder="enter longitude">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
-                  </div>
+                  <form action = 'update_location_and_return.php' method = 'POST'>
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">edit location</h4>
+                    </div>
+                    <div class="modal-body">
+                      <label class="control-label " for="latitude">latitude</label>
+                      <input type="text" class="form-control" name="newlatitude" placeholder="enter latitude">
+                        <br>
+                        <label class="control-label " for="longitude">longitude</label>
+                      <input type="text" class="form-control" name="newlongitude" placeholder="enter longitude">
+                    </div>
+                    <div class="modal-footer">
+                      <input type="submit" class="btn btn-default"  value = 'Edit'>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -136,6 +159,8 @@ EOT;
 
             <!--助教新增-->
             walletbalance: 100
+
+            
             <!-- Modal -->
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
               data-target="#myModal">Add value</button>
@@ -164,17 +189,17 @@ EOT;
              -->
         <h3>Search</h3>
         <div class=" row  col-xs-8">
-          <form class="form-horizontal" action="/action_page.php">
+          <form class="form-horizontal" action="action_page.php" method="POST">
             <div class="form-group">
               <label class="control-label col-sm-1" for="Shop">Shop</label>
               <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="Enter Shop name">
+                <input type="text" class="form-control" placeholder="Enter Shop name" name="name">
               </div>
               <label class="control-label col-sm-1" for="distance">distance</label>
               <div class="col-sm-5">
 
 
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="sel1" name="dist">
                   <option>near</option>
                   <option>medium </option>
                   <option>far</option>
@@ -189,18 +214,18 @@ EOT;
               <label class="control-label col-sm-1" for="Price">Price</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input name="price1" type="text" class="form-control">
 
               </div>
               <label class="control-label col-sm-1" for="~">~</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input name="price2" type="text" class="form-control">
 
               </div>
               <label class="control-label col-sm-1" for="Meal">Meal</label>
               <div class="col-sm-5">
-                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal">
+                <input name="meal" type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal">
                 <datalist id="Meals">
                   <option value="Hamburger">
                   <option value="coffee">
@@ -213,7 +238,7 @@ EOT;
             
               
                 <div class="col-sm-5">
-                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category">
+                  <input name="category" type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category">
                   <datalist id="categorys">
                     <option value="fast food">
                
@@ -237,20 +262,35 @@ EOT;
                
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-               
-                  <td>macdonald</td>
-                  <td>fast food</td>
-                
-                  <td>near </td>
-                  <td>  <button type="button" class="btn btn-info " data-toggle="modal" data-target="#macdonald">Open menu</button></td>
-            
-                </tr>
-           
-
-              </tbody>
+              <!-- tsu part -->
+              <?php
+                if(isset($_SESSION['search_info']) and !empty($_SESSION['search_info'])){
+                  $GLOBALS['counter'] = 1 ;
+                  foreach($_SESSION['search_info'] as $subres){ 
+                    echo '<tbody>
+                      <tr>
+                        <th scope="row">'
+                    . strval($GLOBALS['counter']) .
+                    "</th>  
+                        <td>"
+                    .$subres["shopname"]. 
+                    "</td>
+                        <td>"
+                    .$subres["category"].
+                    "</td>
+                        <td>".$subres["dist"]."</td>
+                        <td>
+                          <form action = 'get_menu.php' , method = 'POST'>
+                            <input name='{$subres['shopname']}' value = 'Open menu' type='submit' class='btn btn-info' data-target = 'macdonald' data-toggle='modal'>
+                          </form>
+                        </td>" 
+                    ."</tr>
+                    </tbody>" ;
+                    $GLOBALS['counter'] += 1 ;   
+                  }
+              }
+              ?>
+              <!-- tsu part -->
             </table>
 
                 <!-- Modal -->
@@ -282,28 +322,26 @@ EOT;
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td><img src="Picture/1.jpg" with="50" heigh="10" alt="Hamburger"></td>
+                <!-- tsu part -->
+                <?php
+                // echo var_dump($_SESSION['menu']);
+                if(isset($_SESSION['menu'])){
+                  foreach($_SESSION['menu'] as $meal){
+                    $pic = $meal['picture'] ; 
+                    echo' <tbody>
+                    <tr>
+                      <th scope="row"></th>
+                      <td><img src="data:'.$meal['picture_file_type'].';base64,' . $pic . '" width="50%" height="50%" /> </td>
+                      <td>'.$meal['name'].'</td>
+                      <td>'.$meal['price'].' </td>
+                      <td>'.$meal['quantity'].' </td>
+                      <td> <input type="checkbox" id="cbox1"></td> <!-- modified: 把value砍掉-->
+                    </tr>' ;
+                  }
+                }
                 
-                  <td>Hamburger</td>
-                
-                  <td>80 </td>
-                  <td>20 </td>
-              
-                  <td> <input type="checkbox" id="cbox1" value="Hamburger"></td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td><img src="Picture/2.jpg" with="10" heigh="10" alt="coffee"></td>
-                 
-                  <td>coffee</td>
-             
-                  <td>50 </td>
-                  <td>20</td>
-              
-                  <td><input type="checkbox" id="cbox2" value="coffee"></td>
-                </tr>
+                ?>
+                <!-- tsu part -->
 
               </tbody>
             </table>
@@ -443,51 +481,6 @@ EOT;
                 </tr>
               </thead>
               <tbody>
-                
-                <!-- <tr>
-                  <th scope="row">2</th>
-                  <td><img src="Picture/2.jpg" with="10" heigh="10" alt="coffee"></td>
-                  <td>coffee</td>
-               
-                  <td>50 </td>
-                  <td>20</td>
-                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#coffee-1">
-                    Edit
-                    </button></td> -->
-                    <!-- Modal -->
-                        <!-- <div class="modal fade" id="coffee-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel">coffee Edit</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">
-                                <div class="row" >
-                                  <div class="col-xs-6">
-                                    <label for="ex72">price</label>
-                                    <input class="form-control" id="ex72" type="text">
-                                  </div>
-                                  <div class="col-xs-6">
-                                    <label for="ex42">quantity</label>
-                                    <input class="form-control" id="ex42" type="text">
-                                  </div>
-                                </div>
-                      
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-                               
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-
-                  <td><button type="button" class="btn btn-danger">Delete</button></td>
-                </tr> -->
                 <?php
                   $dbservername = 'localhost';
                   $dbname = 'database_hw2';
@@ -505,16 +498,25 @@ EOT;
                     PDO::ATTR_ERRMODE,
                     PDO::ERRMODE_EXCEPTION
                   );
-                  $stmt = $conn->prepare("select * from food");
-                  $stmt->execute();
-                  while($row=$stmt->fetch()){
-                    $id = $row['id'];
-                    $picture_type = $row['picture_file_type'];
-                    $picture = $row['picture'];
-                    $meal_name = $row['name'];
-                    $price = $row['price'];
-                    $quantity = $row['quantity'];
-                    print_row($id,$picture_type,$picture,$meal_name,$price,$quantity);
+                  if(isset($_SESSION['shop_name'])){
+                    $shop_name = $_SESSION['shop_name'];
+                    $stmt = $conn->prepare("select * from food where shop_name=:shop_name");
+                    $stmt->execute(
+                      array(
+                        'shop_name' => $shop_name
+                      )
+                    );
+                    $order = 0;
+                    while($row=$stmt->fetch()){
+                      $order++;
+                      $id = $row['id'];
+                      $picture_type = $row['picture_file_type'];
+                      $picture = $row['picture'];
+                      $meal_name = $row['name'];
+                      $price = $row['price'];
+                      $quantity = $row['quantity'];
+                      print_row($order,$id,$picture_type,$picture,$meal_name,$price,$quantity);
+                    }
                   }
                 ?>
               </tbody>
@@ -533,6 +535,7 @@ EOT;
         $(this).tab('show');
       });
     });
+    
     <?php
       if(isset($_SESSION['jump'])&&$_SESSION['jump']==true){
         echo<<<EOT
@@ -550,6 +553,19 @@ EOT;
         EOT;
       }
     ?>
+    // tsu part
+    <?php 
+      if(isset($_SESSION['menu'])){
+        echo<<<EOT
+        $(function(){
+            $('#macdonald').modal('show');
+          }
+        );
+        EOT;
+        unset($_SESSION['menu']) ; 
+      }
+    ?>
+    // tsu part
 
   </script>
 

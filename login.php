@@ -30,8 +30,10 @@ try {
     if ($stmt->rowCount() == 1) {
         $row = $stmt->fetch();
         if ($row['password'] == hash('sha256', $_POST['password'])) {
+            $_SESSION['Password'] = $row['password'] ; // tsu part
             $_SESSION['Authenticated'] = true;
             $_SESSION['account'] = $row[0];
+            // $_SESSION['jump'] = true;
             header("Location: nav.php");
             exit();
         } else
