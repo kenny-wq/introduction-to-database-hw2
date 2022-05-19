@@ -79,7 +79,8 @@
 						</div>
 						<div class="form-group">
 							<label for="Account" class="sr-only">Account</label>
-							<input type="text" name="account" class="form-control" id="Account" placeholder="Account" autocomplete="off">
+							<input type="text" name="account" class="form-control" id="Account" placeholder="Account" autocomplete="off" oninput="check_account(this.value);">
+							<label style="color:red;" for="Account" id="account_hint"></label>
 						</div>
 						<div class="form-group">
 							<label for="password" class="sr-only">Password</label>
@@ -125,6 +126,23 @@
 	<script src="js/jquery.waypoints.min.js"></script>
 	<!-- Main JS -->
 	<script src="js/main.js"></script>
+
+	<script>
+		function check_account(str){
+			if (str.length == 0) {
+				document.getElementById("account_hint").innerHTML = "";
+				return;
+			} else {
+				const xmlhttp = new XMLHttpRequest();
+				xmlhttp.onload = function() {
+					document.getElementById("account_hint").innerHTML = this.responseText;
+				}
+				xmlhttp.open("GET", "check_account.php?account=" + str);
+				xmlhttp.send();
+			}
+		}
+
+	</script>
 
 	</body>
 </html>

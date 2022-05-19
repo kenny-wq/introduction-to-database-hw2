@@ -374,9 +374,10 @@ EOT;
                   echo '<input name="shop_name" class="form-control" id="ex5" value="'.$_SESSION['shop_name'].'" type="text" readonly>';
                 }
                 else{
-                  echo '<input name="shop_name" class="form-control" id="ex5" placeholder="macdonald" type="text">';
+                  echo '<input name="shop_name" class="form-control" id="ex5" placeholder="macdonald" type="text" oninput="check_shop_name(this.value);">';
                 }
               ?>
+              <label style="color:red;" for="ex5" id="shop_name_hint"></label>
             </div>
             <div class="col-xs-2">
               <label for="ex5">shop category</label>
@@ -566,6 +567,34 @@ EOT;
       }
     ?>
     // tsu part
+
+    function check_shop_name(str){
+      if (str.length == 0) {
+				document.getElementById("shop_name_hint").innerHTML = "";
+				return;
+			} else {
+				const xmlhttp = new XMLHttpRequest();
+				xmlhttp.onload = function() {
+					document.getElementById("shop_name_hint").innerHTML = this.responseText;
+				}
+				xmlhttp.open("GET", "check_shop_name.php?shop_name=" + str);
+				xmlhttp.send();
+			}
+    }
+
+    function check_account(str){
+			if (str.length == 0) {
+				document.getElementById("account_hint").innerHTML = "";
+				return;
+			} else {
+				const xmlhttp = new XMLHttpRequest();
+				xmlhttp.onload = function() {
+					document.getElementById("account_hint").innerHTML = this.responseText;
+				}
+				xmlhttp.open("GET", "check_account.php?account=" + str);
+				xmlhttp.send();
+			}
+		}
 
   </script>
 
